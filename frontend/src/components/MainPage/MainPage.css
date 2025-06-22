@@ -1,0 +1,244 @@
+.main-page-container {
+  padding-top: 80px; /* To offset fixed header */
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero Section */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(80vh - 80px); /* Adjust based on header height */
+  padding: 40px 20px;
+  background: linear-gradient(to right bottom, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1)), url('https://images.pexels.com/photos/3992933/pexels-photo-3992933.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center/cover;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.hero-content {
+  max-width: 700px;
+  margin-bottom: 30px;
+}
+
+.main-title {
+  font-size: 3.5rem; /* Overrides global stunning-title for hero */
+  color: #ffffff; /* Darker for contrast on light bg */
+  margin-bottom: 15px;
+}
+
+.main-title .highlight {
+  color: #3498db; /* Accent color for AI */
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #ffffff;
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+.hero-cta {
+  padding: 15px 35px;
+  font-size: 1.2rem;
+}
+
+.hero-image-container {
+  margin-top: 20px;
+}
+
+.hero-placeholder-image {
+  width: 300px;
+  height: 300px;
+  background-color: #e9ecef;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  font-size: 1.2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+/* Features Section */
+.features-section {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(41, 128, 185, 0.15);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #3498db;
+}
+
+.feature-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.7;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+  padding: 60px 20px;
+  background-color: #f8f9fa; /* Slightly different background */
+}
+
+.steps-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch; /* Makes cards equal height if content differs */
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.step-card {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  text-align: center;
+  flex-basis: 300px; 
+  flex-grow: 1; 
+  border-left: 5px solid #3498db;
+}
+
+.step-card h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.step-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Responsive adjustments for MainPage */
+@media (max-width: 992px) { 
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-content {
+    margin-bottom: 40px;
+  }
+  .hero-placeholder-image {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) { 
+  .main-page-container {
+    padding-top: 70px; 
+  }
+  .main-title {
+    font-size: 2.8rem;
+  }
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  .hero-cta {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+  }
+  .hero-placeholder-image {
+    width: 200px;
+    height: 200px;
+    font-size: 1rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr; 
+  }
+  .steps-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .step-card {
+    width: 90%;
+    max-width: 400px; 
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) { 
+  .main-page-container {
+    padding-top: 60px;
+  }
+  .main-title {
+    font-size: 2.2rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
+  .hero-cta {
+    padding: 10px 25px;
+    font-size: 1rem;
+  }
+  .hero-placeholder-image {
+    width: 150px;
+    height: 150px;
+    font-size: 0.9rem;
+  }
+  .feature-card, .step-card {
+    padding: 20px;
+  }
+  .feature-card h3 {
+    font-size: 1.3rem;
+  }
+  .section-title {
+    font-size: 2rem; 
+  }
+}

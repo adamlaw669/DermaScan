@@ -1,0 +1,143 @@
+.app-header {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 15px 0;
+  position: fixed; /* Changed from sticky to fixed for consistent behavior */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.app-header.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 10px 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: #3498db;
+}
+
+.logo .logo-ai {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-button {
+  font-family: 'Montserrat', sans-serif;
+  background: none;
+  border: none;
+  color: #34495e;
+  margin-left: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  padding: 8px 0;
+  transition: color 0.3s ease;
+}
+
+.nav-button::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.nav-button:hover,
+.nav-button.active { /* Add an 'active' class if you implement active link highlighting */
+  color: #3498db;
+}
+
+.nav-button:hover::after,
+.nav-button.active::after {
+  width: 100%;
+}
+
+.mobile-menu-icon {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  padding: 5px;
+}
+
+/* Responsive Header */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 15px;
+  }
+  .logo {
+    font-size: 1.6rem;
+  }
+  .nav-links {
+    display: none; /* Hide by default on mobile */
+    flex-direction: column;
+    position: absolute;
+    top: 100%; /* Position below the header */
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+  }
+  .nav-links.open {
+    display: flex; /* Show when mobile menu is open */
+  }
+  .nav-button {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
+  }
+  .nav-button::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .mobile-menu-icon {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.4rem;
+  }
+  .app-header, .app-header.scrolled {
+    padding: 8px 0;
+  }
+}

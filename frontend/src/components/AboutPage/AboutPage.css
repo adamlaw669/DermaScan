@@ -1,0 +1,163 @@
+.about-page-container {
+  padding-top: 80px; /* To offset fixed header */
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 60px;
+  animation: fadeInSlideUp 0.8s ease-out;
+}
+
+@keyframes fadeInSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.about-hero {
+  text-align: center;
+  padding: 40px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.about-title {
+  font-size: 3rem; /* Override global */
+  color: #2c3e50;
+}
+
+.about-title .highlight {
+  color: #3498db;
+}
+
+.about-subtitle {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+
+.about-content-section {
+  margin-bottom: 50px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+}
+
+.mission-vision {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 768px) {
+  .mission-vision {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.content-block {
+  /* Styles for individual mission/vision blocks if needed */
+}
+
+.section-subheader {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #3498db;
+  margin-bottom: 15px;
+  border-left: 4px solid #3498db;
+  padding-left: 10px;
+}
+
+.about-content-section p, .technology-intro {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+.technology-intro strong {
+    color: #c0392b; /* Warning color for the note */
+}
+
+.tech-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.tech-highlight-item {
+    background-color: #eaf2f8;
+    color: #2c3e50;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.tech-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+
+.team-section { /* Placeholder for team, can be adapted for 'Technology' */
+  text-align: left;
+}
+
+.contact-cta {
+  text-align: center;
+  background-color: #f8f9fa; /* Light background for CTA section */
+}
+
+.about-cta {
+  margin-top: 15px;
+}
+
+/* Responsive adjustments for AboutPage */
+@media (max-width: 768px) {
+  .about-page-container {
+    padding-top: 70px;
+  }
+  .about-title {
+    font-size: 2.5rem;
+  }
+  .about-subtitle {
+    font-size: 1.1rem;
+  }
+  .section-subheader {
+    font-size: 1.6rem;
+  }
+  .about-content-section p, .technology-intro {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-page-container {
+    padding-top: 60px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .about-title {
+    font-size: 2rem;
+  }
+  .about-subtitle {
+    font-size: 1rem;
+  }
+  .section-subheader {
+    font-size: 1.4rem;
+  }
+  .about-content-section {
+    padding: 15px;
+  }
+  .tech-highlight-item {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+}

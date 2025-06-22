@@ -1,0 +1,77 @@
+.scanner-page-container {
+  padding-top: 80px; /* Offset for fixed header */
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.scanner-title {
+  font-size: 2.8rem; /* Use stunning-title style */
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.scanner-description {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.upload-section {
+  margin-bottom: 40px;
+}
+
+.image-upload-input {
+  display: none; /* Hide the default file input */
+}
+
+.upload-button {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  /* Uses the cta-button style from App.css */
+}
+
+.image-preview {
+  /* Styles for image preview */
+}
+
+.analyze-button {
+  padding: 14px 32px;
+  font-size: 1.2rem;
+  margin-top: 20px;
+  /* Uses the cta-button style from App.css */
+}
+
+.results-section {
+  /* Styles for results display */
+  margin-top: 30px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scanner-title {
+    font-size: 2.2rem;
+  }
+  .scanner-description {
+    font-size: 1rem;
+  }
+  .upload-button {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+  .analyze-button {
+    padding: 12px 28px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .scanner-title {
+    font-size: 1.8rem;
+  }
+}
