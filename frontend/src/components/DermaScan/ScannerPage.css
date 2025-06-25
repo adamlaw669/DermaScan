@@ -1,3 +1,7 @@
+body{
+  color: #333;
+}
+
 .scanner-page-container {
   padding-top: 80px; /* Offset for fixed header */
   text-align: center;
