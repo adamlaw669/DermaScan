@@ -139,7 +139,7 @@ const ScannerPage = ({ navigateTo }) => {
       {result && (
         <div className="results-section">
           <h3>Prediction: {result.label}</h3>
-          <p>Confidence: {result.confidence.toFixed(2)}%</p>
+          <p className="confidence-rate">Confidence: {result.confidence.toFixed(2)}%</p>
           <p className="disclaimer">Note: This is an AI-generated assessment and not a substitute for professional medical advice.</p>
         </div>
       )}
