@@ -1,6 +1,11 @@
 .scanner-page-container.new-ui {
   max-width: 1200px;
   padding-top: 100px;
+  /* Edits to center the container on larger screens */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .scanner-header {
