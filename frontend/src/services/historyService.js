@@ -1,3 +1,5 @@
+// src/services/historyService.js
+
 const HISTORY_KEY = 'dermaScanHistory';
 
 // --- Base Functions ---
@@ -18,7 +20,8 @@ const saveHistory = (history) => {
   try {
     const historyString = JSON.stringify(history);
     localStorage.setItem(HISTORY_KEY, historyString);
-  } catch (error) {
+  } catch (error)
+  {
     console.error("Could not save history to localStorage", error);
   }
 };
@@ -34,24 +37,25 @@ const toBase64 = file => new Promise((resolve, reject) => {
 
 // --- Public API for History Service ---
 
-export const addScanToHistory = async (scanResult, imageFile) => {
-  if (!scanResult || !imageFile) return;
+export const addScanToHistory = async (scanResult, imageFiles) => {
+  if (!scanResult || !imageFiles || imageFiles.length === 0) return;
 
   const history = getHistory();
-  const imageBase64 = await toBase64(imageFile);
+  
+  // Convert all image files to Base64 concurrently
+  const imagePromises = imageFiles.map(file => toBase64(file));
+  const imagesBase64 = await Promise.all(imagePromises);
 
   const newScan = {
     id: Date.now(),
     date: new Date().toISOString(),
     diagnosis: scanResult.label,
     confidence: scanResult.confidence,
-    image: imageBase64,
+    images: imagesBase64, // Store an array of images
   };
 
-  // Add the new scan to the beginning of the array
   history.scans.unshift(newScan);
   
-  // Optional: Limit history size to prevent localStorage from getting too large
   if (history.scans.length > 20) {
       history.scans.pop();
   }
