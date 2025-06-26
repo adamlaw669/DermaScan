@@ -105,7 +105,7 @@ export const getDermatologists = (condition) => {
 };
 
 export const getChatbotResponse = async (history, message) => {
-    const prompt = `You are the DermaScan AI, an empathetic and knowledgeable AI assistant. A user is asking for more information about their diagnosed skin condition. Keep your answers helpful, safe, and clear. Always remind the user that you are an AI and cannot provide official medical advice. Conversation History:\n${history.map(msg => `${msg.role}: ${msg.text}`).join('\n')}\n\nNew User Question: ${message}\n\nYour Response:`;
+    const prompt = `You are the DermaScan AI, an empathetic and knowledgeable AI assistant. A user is asking for more information about their diagnosed skin condition. Keep your answers helpful, safe, and clear. Also, whatever language is spoken to you, you must respond with that very language. Whether Yoruba, English, or Hausa or practically any other language. Always remind the user that you are an AI and cannot provide official medical advice. Conversation History:\n${history.map(msg => `${msg.role}: ${msg.text}`).join('\n')}\n\nNew User Question: ${message}\n\nYour Response:`;
     
     try {
         const response = await fetch(API_URL, {
