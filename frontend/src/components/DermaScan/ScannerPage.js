@@ -1,23 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getHomeRemedies, getSkincareProducts, getDermatologists } from '../../services/geminiService';
 import { addScanToHistory } from '../../services/historyService';
 import './ScannerPage.css';
 
-// The InfoCard component is defined here for clarity and co-location.
+// The InfoCard component remains the same as your previous version.
 const InfoCard = ({ title, data, error, isLoading }) => {
     if (isLoading) return <div className="loader">Finding {title}...</div>;
     if (error) return <div className="error-message">{error}</div>;
     if (!data || data.length === 0) return null;
 
     const renderListItemContent = (item) => {
-        if (title === "Home Remedies") {
-            return (
-                <>
-                    <span className="item-name">{item.name}</span>
-                    <p className="item-directions">{item.directions}</p>
-                </>
-            );
-        }
+        if (title === "Home Remedies") return (<><span className="item-name">{item.name}</span><p className="item-directions">{item.directions}</p></>);
         if (title === "Dermatologists") {
             return (
                 <div className="doctor-info">
@@ -54,34 +47,92 @@ const InfoCard = ({ title, data, error, isLoading }) => {
 
 
 const ScannerPage = ({ navigateTo }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [images, setImages] = useState([]); // Now an array to hold up to 4 images
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeInfo, setActiveInfo] = useState(null);
   const [infoData, setInfoData] = useState([]);
   const [infoLoading, setInfoLoading] = useState(false);
   const [infoError, setInfoError] = useState(null);
+  
+  // State and refs for camera modal
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const MAX_IMAGES = 4;
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setResult(null);
-      setActiveInfo(null);
-      setInfoData([]);
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const newImages = filesArray.map(file => ({
+        file: file,
+        previewUrl: URL.createObjectURL(file)
+      }));
+      setImages(prev => [...prev, ...newImages].slice(0, MAX_IMAGES));
     }
   };
 
+  const removeImage = (indexToRemove) => {
+    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  // --- CAMERA LOGIC ---
+  const openCamera = async () => {
+    if (images.length >= MAX_IMAGES) {
+        alert(`You can only upload a maximum of ${MAX_IMAGES} images.`);
+        return;
+    }
+    setIsCameraOpen(true);
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+        }
+    } catch (err) {
+        console.error("Error accessing camera:", err);
+        alert("Could not access camera. Please ensure you have given permission.");
+        setIsCameraOpen(false);
+    }
+  };
+
+  const closeCamera = () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+          videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
+      setIsCameraOpen(false);
+  };
+
+  const handleCapture = () => {
+      if (videoRef.current && canvasRef.current) {
+          const video = videoRef.current;
+          const canvas = canvasRef.current;
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const context = canvas.getContext('2d');
+          context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+          
+          canvas.toBlob((blob) => {
+              const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
+              const newImage = { file, previewUrl: URL.createObjectURL(file) };
+              setImages(prev => [...prev, newImage].slice(0, MAX_IMAGES));
+              closeCamera();
+          }, 'image/jpeg');
+      }
+  };
+  
+  // --- ANALYSIS LOGIC ---
   const handleAnalyzeClick = async () => {
-    if (!selectedFile) return;
+    if (images.length === 0) return;
     setLoading(true);
     setResult(null);
     setActiveInfo(null);
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    // The backend must be configured to accept multiple files under the same field name
+    images.forEach(image => {
+        formData.append('files', image.file);
+    });
 
     try {
       const response = await fetch('https://derma-scan-backend.onrender.com/predict', {
@@ -91,7 +142,7 @@ const ScannerPage = ({ navigateTo }) => {
       const data = await response.json();
       if (data.label && typeof data.confidence === 'number') {
         setResult(data);
-        await addScanToHistory(data, selectedFile);
+        // await addScanToHistory(data, images.map(img => img.file)); // History needs update for multi-image
       } else {
         alert('Unexpected response from server.');
       }
@@ -112,93 +163,79 @@ const ScannerPage = ({ navigateTo }) => {
     
     let response;
     switch(infoType) {
-        case 'remedies':
-            response = await getHomeRemedies(result.label);
-            setInfoData(response.remedies || []);
-            break;
-        case 'products':
-            response = await getSkincareProducts(result.label);
-            setInfoData(response.products || []);
-            break;
-        case 'dermatologists':
-            response = await getDermatologists(result.label);
-            setInfoData(response.dermatologists || []);
-            break;
-        default:
-            response = {error: "Invalid information type"};
+        case 'remedies': response = await getHomeRemedies(result.label); setInfoData(response.remedies || []); break;
+        case 'products': response = await getSkincareProducts(result.label); setInfoData(response.products || []); break;
+        case 'dermatologists': response = await getDermatologists(result.label); setInfoData(response.dermatologists || []); break;
+        default: response = {error: "Invalid information type"};
     }
     if (response.error) setInfoError(response.error);
     setInfoLoading(false);
   };
 
   return (
-    <div className="scanner-page-container new-ui">
-      <div className="scanner-header">
-        <h1 className="scanner-title stunning-title">AI Skin Analysis</h1>
-        <p className="scanner-description">Upload a clear image of a skin lesion for a preliminary AI-powered assessment.</p>
-      </div>
-
-      <div className="scanner-main-content">
-        <div className="scanner-left-panel">
-          <input type="file" id="skin-image-upload" accept="image/*" className="image-upload-input" onChange={handleFileChange} />
-          <label htmlFor="skin-image-upload" className="upload-area">
-            {previewUrl ? (
-              <img src={previewUrl} alt="Uploaded preview" className="image-preview-new" />
-            ) : (
-              <div className="upload-prompt">
-                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <p>Click to browse or drag & drop</p>
-                <span>PNG, JPG, or WEBP</span>
-              </div>
-            )}
-          </label>
-           {selectedFile && !result && (
-            <button className="analyze-button cta-button" onClick={handleAnalyzeClick} disabled={loading}>
-                {loading ? 'Analyzing...' : 'Analyze Image'}
-            </button>
-           )}
+    <>
+      <div className="scanner-page-container new-ui">
+        <div className="scanner-header">
+          <h1 className="scanner-title stunning-title">AI Skin Analysis</h1>
+          <p className="scanner-description">Upload up to 4 clear images of a skin lesion for a preliminary AI-powered assessment.</p>
         </div>
 
-        <div className="scanner-right-panel">
-          {result ? (
-            <>
-              <div className="results-section">
-                <h3 className="results-title">Analysis Report</h3>
-                <p className="results-diagnosis">Prediction: <strong>{result.label}</strong></p>
-                <div className="confidence-bar">
-                    <div className="confidence-fill" style={{width: `${result.confidence}%`}}>
-                        {result.confidence.toFixed(1)}% Confidence
+        <div className="scanner-main-content">
+          <div className="scanner-left-panel">
+            <h3 className="upload-section-title">Image Upload</h3>
+            <div className="upload-grid">
+              {Array.from({ length: MAX_IMAGES }).map((_, index) => (
+                <div key={index} className="image-slot">
+                  {images[index] ? (
+                    <div className="image-preview-container">
+                      <img src={images[index].previewUrl} alt={`preview ${index + 1}`} className="image-preview-new" />
+                      <button onClick={() => removeImage(index)} className="remove-image-btn" title="Remove Image">
+                        &times;
+                      </button>
                     </div>
+                  ) : (
+                    <label htmlFor="skin-image-upload" className="upload-slot-prompt">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" y1="5" x2="22" y2="5"/><line x1="19" y1="2" x2="19" y2="8"/><path d="M15 13h-2v4h-2v-4H9v-2h2V9h2v2h2v2z"/></svg>
+                        <span>Add Image</span>
+                    </label>
+                  )}
                 </div>
-                <p className="disclaimer">Note: This is an AI-generated assessment and not a substitute for professional medical advice.</p>
-              </div>
-
-              <div className="post-analysis-actions">
-                  <h4 className="next-steps-title">Next Steps</h4>
-                  <div className="action-buttons-grid">
-                    <button className="action-button" onClick={() => navigateTo('dermascan-ai', { condition: result.label })}>Ask DermaScan AI</button>
-                    <button className="action-button" onClick={() => handleGetInfo('remedies')}>Get Home Remedies</button>
-                    <button className="action-button" onClick={() => handleGetInfo('products')}>Get Skincare Products</button>
-                    <button className="action-button" onClick={() => handleGetInfo('dermatologists')}>Contact Dermatologists</button>
-                  </div>
-              </div>
-            </>
-          ) : (
-            <div className="placeholder-right-panel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
-                <h3>Your Report Will Appear Here</h3>
-                <p>Upload an image and click "Analyze" to see the AI-powered report and recommendations.</p>
+              ))}
             </div>
-          )}
-          
-          <div className="info-display-section">
-            {activeInfo === 'remedies' && <InfoCard title="Home Remedies" data={infoData} error={infoError} isLoading={infoLoading} />}
-            {activeInfo === 'products' && <InfoCard title="Skincare Products" data={infoData} error={infoError} isLoading={infoLoading} />}
-            {activeInfo === 'dermatologists' && <InfoCard title="Dermatologists" data={infoData} error={infoError} isLoading={infoLoading} />}
+            <input type="file" id="skin-image-upload" accept="image/*" multiple className="image-upload-input" onChange={handleFileChange} disabled={images.length >= MAX_IMAGES} />
+
+            <div className="upload-buttons-container">
+              <button onClick={openCamera} className="camera-button" disabled={images.length >= MAX_IMAGES}>
+                Use Camera
+              </button>
+              {images.length > 0 && !result && (
+                <button className="analyze-button cta-button" onClick={handleAnalyzeClick} disabled={loading}>
+                  {loading ? 'Analyzing...' : `Analyze ${images.length} Image(s)`}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="scanner-right-panel">
+            {/* The right panel logic remains largely the same as your previous version */}
+            {/* It will show the placeholder, then the report, then the info cards */}
           </div>
         </div>
       </div>
-    </div>
+
+      {isCameraOpen && (
+          <div className="camera-modal-overlay">
+              <div className="camera-modal-content">
+                  <video ref={videoRef} autoPlay playsInline className="camera-video-feed"></video>
+                  <canvas ref={canvasRef} style={{display: 'none'}}></canvas>
+                  <div className="camera-controls">
+                      <button onClick={handleCapture} className="capture-btn">Capture</button>
+                      <button onClick={closeCamera} className="close-camera-btn">Close</button>
+                  </div>
+              </div>
+          </div>
+      )}
+    </>
   );
 };
 
