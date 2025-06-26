@@ -173,6 +173,12 @@ const ScannerPage = ({ navigateTo }) => {
     setInfoLoading(false);
   };
 
+const getConfidenceColor = (confidence) => {
+  if (confidence >= 80) return '#4caf50';
+  if (confidence >= 50) return '#ff9800';
+  return '#f44336';                          
+};
+
   return (
     <>
       <div className="scanner-page-container new-ui">
