@@ -212,7 +212,7 @@
     color: #4b5563;
     font-family: 'Playfair Display', serif;
 }
-.results-section { text-align: left; }
+.results-section { text-align: center; }
 .results-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.8rem;
