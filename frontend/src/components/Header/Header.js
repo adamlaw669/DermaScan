@@ -34,6 +34,7 @@ const Header = ({ navigateTo }) => {
           <button onClick={() => handleNavClick('main')} className="nav-button">Main</button>
           <button onClick={() => handleNavClick('scanner')} className="nav-button">Scanner</button>
           <button onClick={() => handleNavClick('dermascan-ai')} className="nav-button">DermaScan AI</button>
+          <button onClick={() => handleNavClick('history')} className="nav-button">History</button>
           <button onClick={() => handleNavClick('about')} className="nav-button">About</button>
         </nav>
         <button className="mobile-menu-icon" onClick={toggleMobileMenu} aria-label="Toggle menu">
