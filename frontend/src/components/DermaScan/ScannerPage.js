@@ -52,6 +52,7 @@ const InfoCard = ({ title, data, error, isLoading }) => {
     );
 };
 
+
 const ScannerPage = ({ navigateTo }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -131,50 +132,71 @@ const ScannerPage = ({ navigateTo }) => {
   };
 
   return (
-    <div className="scanner-page-container">
-      <h1 className="scanner-title stunning-title">DermaScan</h1>
-      <p className="scanner-description">Upload an image of your skin to check for potential signs of skin cancer.</p>
-
-      <div className="upload-section">
-        <input type="file" id="skin-image-upload" accept="image/*" className="image-upload-input" onChange={handleFileChange} />
-        <label htmlFor="skin-image-upload" className="upload-button cta-button">
-          {selectedFile ? 'Change Image' : 'Upload Image'}
-        </label>
+    <div className="scanner-page-container new-ui">
+      <div className="scanner-header">
+        <h1 className="scanner-title stunning-title">AI Skin Analysis</h1>
+        <p className="scanner-description">Upload a clear image of a skin lesion for a preliminary AI-powered assessment.</p>
       </div>
 
-      {previewUrl && (
-        <div className="image-preview">
-          <img src={previewUrl} alt="Uploaded preview" />
+      <div className="scanner-main-content">
+        <div className="scanner-left-panel">
+          <input type="file" id="skin-image-upload" accept="image/*" className="image-upload-input" onChange={handleFileChange} />
+          <label htmlFor="skin-image-upload" className="upload-area">
+            {previewUrl ? (
+              <img src={previewUrl} alt="Uploaded preview" className="image-preview-new" />
+            ) : (
+              <div className="upload-prompt">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p>Click to browse or drag & drop</p>
+                <span>PNG, JPG, or WEBP</span>
+              </div>
+            )}
+          </label>
+           {selectedFile && !result && (
+            <button className="analyze-button cta-button" onClick={handleAnalyzeClick} disabled={loading}>
+                {loading ? 'Analyzing...' : 'Analyze Image'}
+            </button>
+           )}
         </div>
-      )}
 
-      {selectedFile && !result && (
-        <button className="analyze-button cta-button" onClick={handleAnalyzeClick} disabled={loading}>
-            {loading ? 'Analyzing...' : 'Analyze Image'}
-        </button>
-      )}
+        <div className="scanner-right-panel">
+          {result ? (
+            <>
+              <div className="results-section">
+                <h3 className="results-title">Analysis Report</h3>
+                <p className="results-diagnosis">Prediction: <strong>{result.label}</strong></p>
+                <div className="confidence-bar">
+                    <div className="confidence-fill" style={{width: `${result.confidence}%`}}>
+                        {result.confidence.toFixed(1)}% Confidence
+                    </div>
+                </div>
+                <p className="disclaimer">Note: This is an AI-generated assessment and not a substitute for professional medical advice.</p>
+              </div>
 
-      {result && (
-        <div className="results-section">
-          <h3>Prediction: {result.label}</h3>
-          <p>Confidence: {result.confidence.toFixed(2)}%</p>
-          <p className="disclaimer">Note: This is an AI-generated assessment and not a substitute for professional medical advice.</p>
+              <div className="post-analysis-actions">
+                  <h4 className="next-steps-title">Next Steps</h4>
+                  <div className="action-buttons-grid">
+                    <button className="action-button" onClick={() => navigateTo('dermascan-ai', { condition: result.label })}>Ask DermaScan AI</button>
+                    <button className="action-button" onClick={() => handleGetInfo('remedies')}>Get Home Remedies</button>
+                    <button className="action-button" onClick={() => handleGetInfo('products')}>Get Skincare Products</button>
+                    <button className="action-button" onClick={() => handleGetInfo('dermatologists')}>Contact Dermatologists</button>
+                  </div>
+              </div>
+            </>
+          ) : (
+            <div className="placeholder-right-panel">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+                <h3>Your Report Will Appear Here</h3>
+                <p>Upload an image and click "Analyze" to see the AI-powered report and recommendations.</p>
+            </div>
+          )}
+          
+          <div className="info-display-section">
+            {activeInfo === 'remedies' && <InfoCard title="Home Remedies" data={infoData} error={infoError} isLoading={infoLoading} />}
+            {activeInfo === 'products' && <InfoCard title="Skincare Products" data={infoData} error={infoError} isLoading={infoLoading} />}
+            {activeInfo === 'dermatologists' && <InfoCard title="Dermatologists" data={infoData} error={infoError} isLoading={infoLoading} />}
+          </div>
         </div>
-      )}
-      
-      {result && (
-        <div className="post-analysis-actions">
-            <button className="action-button" onClick={() => navigateTo('dermascan-ai', { condition: result.label })}>DermaScan AI</button>
-            <button className="action-button" onClick={() => handleGetInfo('remedies')}>Get Home Remedies</button>
-            <button className="action-button" onClick={() => handleGetInfo('products')}>Get Skincare Products</button>
-            <button className="action-button" onClick={() => handleGetInfo('dermatologists')}>Contact Dermatologists</button>
-        </div>
-      )}
-      
-      <div className="info-display-section">
-        {activeInfo === 'remedies' && <InfoCard title="Home Remedies" data={infoData} error={infoError} isLoading={infoLoading} />}
-        {activeInfo === 'products' && <InfoCard title="Skincare Products" data={infoData} error={infoError} isLoading={infoLoading} />}
-        {activeInfo === 'dermatologists' && <InfoCard title="Dermatologists" data={infoData} error={infoError} isLoading={infoLoading} />}
       </div>
     </div>
   );
