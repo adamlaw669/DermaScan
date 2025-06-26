@@ -37,7 +37,7 @@
   gap: 20px;
 }
 
-/* --- New Multi-Image Upload Grid --- */
+/* --- Multi-Image Upload Grid --- */
 .upload-section-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.5rem;
@@ -52,7 +52,7 @@
 .image-slot {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1; /* Makes the slots square */
+    aspect-ratio: 1 / 1;
     background-color: #f9fafb;
     border-radius: 12px;
     border: 2px dashed #d1d5db;
@@ -139,7 +139,7 @@
   flex-grow: 2;
 }
 
-/* --- New Camera Modal Styles --- */
+/* --- Camera Modal Styles --- */
 .camera-modal-overlay {
     position: fixed;
     top: 0;
@@ -222,7 +222,7 @@
 .results-diagnosis { font-size: 1.2rem; margin-bottom: 15px; }
 .confidence-bar {
     width: 100%;
-    background-color: red;
+    background-color: #e5e7eb;
     border-radius: 50px;
     height: 28px;
     overflow: hidden;
