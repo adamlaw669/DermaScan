@@ -129,7 +129,6 @@ const ScannerPage = ({ navigateTo }) => {
     setActiveInfo(null);
 
     const formData = new FormData();
-    // The backend must be configured to accept multiple files under the same field name
     images.forEach(image => {
         formData.append('files', image.file);
     });
@@ -142,7 +141,7 @@ const ScannerPage = ({ navigateTo }) => {
       const data = await response.json();
       if (data.label && typeof data.confidence === 'number') {
         setResult(data);
-        // await addScanToHistory(data, images.map(img => img.file)); // History needs update for multi-image
+        await addScanToHistory(data, images.map(img => img.file));
       } else {
         alert('Unexpected response from server.');
       }
@@ -217,8 +216,42 @@ const ScannerPage = ({ navigateTo }) => {
           </div>
 
           <div className="scanner-right-panel">
-            {/* The right panel logic remains largely the same as your previous version */}
-            {/* It will show the placeholder, then the report, then the info cards */}
+            {result ? (
+              <>
+                <div className="results-section">
+                  <h3 className="results-title">Analysis Report</h3>
+                  <p className="results-diagnosis">Prediction: <strong>{result.label}</strong></p>
+                  <div className="confidence-bar">
+                      <div className="confidence-fill" style={{width: `${result.confidence}%`}}>
+                          {result.confidence.toFixed(1)}% Confidence
+                      </div>
+                  </div>
+                  <p className="disclaimer">Note: This is an AI-generated assessment and not a substitute for professional medical advice.</p>
+                </div>
+
+                <div className="post-analysis-actions">
+                    <h4 className="next-steps-title">Next Steps</h4>
+                    <div className="action-buttons-grid">
+                      <button className="action-button" onClick={() => navigateTo('dermascan-ai', { condition: result.label })}>Ask DermaScan AI</button>
+                      <button className="action-button" onClick={() => handleGetInfo('remedies')}>Get Home Remedies</button>
+                      <button className="action-button" onClick={() => handleGetInfo('products')}>Get Skincare Products</button>
+                      <button className="action-button" onClick={() => handleGetInfo('dermatologists')}>Contact Dermatologists</button>
+                    </div>
+                </div>
+              </>
+            ) : (
+              <div className="placeholder-right-panel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+                  <h3>Your Report Will Appear Here</h3>
+                  <p>Upload an image and click "Analyze" to see the AI-powered report and recommendations.</p>
+              </div>
+            )}
+            
+            <div className="info-display-section">
+              {activeInfo === 'remedies' && <InfoCard title="Home Remedies" data={infoData} error={infoError} isLoading={infoLoading} />}
+              {activeInfo === 'products' && <InfoCard title="Skincare Products" data={infoData} error={infoError} isLoading={infoLoading} />}
+              {activeInfo === 'dermatologists' && <InfoCard title="Dermatologists" data={infoData} error={infoError} isLoading={infoLoading} />}
+            </div>
           </div>
         </div>
       </div>
