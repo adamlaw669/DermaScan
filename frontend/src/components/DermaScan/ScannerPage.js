@@ -3,7 +3,6 @@ import { getHomeRemedies, getSkincareProducts, getDermatologists } from '../../s
 import { addScanToHistory } from '../../services/historyService';
 import './ScannerPage.css';
 
-// The InfoCard component remains the same as your previous version.
 const InfoCard = ({ title, data, error, isLoading }) => {
     if (isLoading) return <div className="loader">Finding {title}...</div>;
     if (error) return <div className="error-message">{error}</div>;
@@ -47,7 +46,7 @@ const InfoCard = ({ title, data, error, isLoading }) => {
 
 
 const ScannerPage = ({ navigateTo }) => {
-  const [images, setImages] = useState([]); // Now an array to hold up to 4 images
+  const [images, setImages] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeInfo, setActiveInfo] = useState(null);
@@ -55,7 +54,6 @@ const ScannerPage = ({ navigateTo }) => {
   const [infoLoading, setInfoLoading] = useState(false);
   const [infoError, setInfoError] = useState(null);
   
-  // State and refs for camera modal
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -77,7 +75,6 @@ const ScannerPage = ({ navigateTo }) => {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  // --- CAMERA LOGIC ---
   const openCamera = async () => {
     if (images.length >= MAX_IMAGES) {
         alert(`You can only upload a maximum of ${MAX_IMAGES} images.`);
@@ -121,7 +118,6 @@ const ScannerPage = ({ navigateTo }) => {
       }
   };
   
-  // --- ANALYSIS LOGIC ---
   const handleAnalyzeClick = async () => {
     if (images.length === 0) return;
     setLoading(true);
@@ -139,11 +135,17 @@ const ScannerPage = ({ navigateTo }) => {
       });
       if (!response.ok) throw new Error('Failed to fetch prediction');
       const data = await response.json();
+
+      // --- DEBUGGING STEP ---
+      // This will show us the exact structure of the data from the backend.
+      console.log("Data received from backend:", data); 
+
       if (data.label && typeof data.confidence === 'number') {
         setResult(data);
         await addScanToHistory(data, images.map(img => img.file));
       } else {
-        alert('Unexpected response from server.');
+        alert(`Unexpected response from server. Check the developer console for details.`);
+        console.error("Unexpected server response:", data);
       }
     } catch (error) {
       console.error('Error:', error);
