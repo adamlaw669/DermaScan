@@ -10,8 +10,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # React local dev server
-        "https://derma-scan-ai.vercel.app"  # replace with your deployed React app URL
+        "http://localhost:3000",  # For local dev
+        "https://derma-scan-ai.vercel.app",  # Your Vercel app
+        "https://dermascan-app.vercel.app"   # Alternate domain
     ],
     allow_credentials=True,
     allow_methods=["*"],
