@@ -21,13 +21,29 @@ app.add_middleware(
 model = load_model()
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    image = Image.open(BytesIO(image_bytes))
-
-    prediction = predict_image(image, model)  # returns tuple ('Melanoma', 0.87)
-    label, score = prediction
+async def predict(files: List[UploadFile] = File(...)):
+    predictions = []
+    for file in files:
+        image_bytes = await file.read()
+        image = Image.open(BytesIO(image_bytes))
+        label, score  = predict_image(image, model)
+        predictions.append(
+            {'label': label,
+             'confidence': float(score)
+             }
+        ) 
+    #the logic for the final prediction 
+    labels = []
+    scores = []
+    for prediction in predictions:
+        labels.append(prediction['label'])
+        scores.append(prediction['confidence']) 
+    final_label = max(set(labels), key=labels.count)
+    label_scores = [score for label, score in zip(labels, scores) if label == final_label]
+    final_score = sum(label_scores) / len(label_scores)
+    
     return {
-        "label": label,
-        "confidence": float(score)
+        "label": final_label,
+        "confidence": float(final_score)
     }
+
