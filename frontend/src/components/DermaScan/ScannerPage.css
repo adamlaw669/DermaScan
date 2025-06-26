@@ -219,7 +219,9 @@
     color: #2c3e50;
     margin-bottom: 20px;
 }
-.results-diagnosis { font-size: 1.2rem; margin-bottom: 15px; }
+.results-diagnosis { 
+color: black;
+font-size: 1.2rem; margin-bottom: 15px; }
 .confidence-bar {
     width: 100%;
     background-color: #e5e7eb;
