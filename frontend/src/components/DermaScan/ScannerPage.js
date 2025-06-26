@@ -68,6 +68,9 @@ const ScannerPage = ({ navigateTo }) => {
         previewUrl: URL.createObjectURL(file)
       }));
       setImages(prev => [...prev, ...newImages].slice(0, MAX_IMAGES));
+      // --- FIX APPLIED HERE ---
+      // Reset the file input value to ensure the onChange event fires every time.
+      e.target.value = null;
     }
   };
 
@@ -138,12 +141,9 @@ const ScannerPage = ({ navigateTo }) => {
       
       console.log("Data received from backend:", data);
 
-      // --- FIX APPLIED HERE ---
-      // Check for common property names for the diagnosis label.
       const diagnosisLabel = data.label || data.prediction || data.class_name;
 
       if (diagnosisLabel && typeof data.confidence === 'number') {
-        // Standardize the result object to use 'label' internally.
         const standardizedResult = {
           label: diagnosisLabel,
           confidence: data.confidence
@@ -163,7 +163,6 @@ const ScannerPage = ({ navigateTo }) => {
   };
   
   const handleGetInfo = async (infoType) => {
-    // This function will now work correctly because we standardized the result object.
     if (!result?.label) return;
     setActiveInfo(infoType);
     setInfoLoading(true);
@@ -217,11 +216,16 @@ const ScannerPage = ({ navigateTo }) => {
               <button onClick={openCamera} className="camera-button" disabled={images.length >= MAX_IMAGES}>
                 Use Camera
               </button>
-              {images.length > 0 && !result && (
-                <button className="analyze-button cta-button" onClick={handleAnalyzeClick} disabled={loading}>
-                  {loading ? 'Analyzing...' : `Analyze ${images.length} Image(s)`}
-                </button>
-              )}
+              {/* --- FIX APPLIED HERE --- */}
+              {/* The analyze button is now part of the main component flow, not inside the conditional block, so it won't disappear unexpectedly. */}
+              <button 
+                className="analyze-button cta-button" 
+                onClick={handleAnalyzeClick} 
+                disabled={loading || images.length === 0}
+                style={{ display: result ? 'none' : 'block' }} // Hide button after analysis
+              >
+                {loading ? 'Analyzing...' : `Analyze ${images.length} Image(s)`}
+              </button>
             </div>
           </div>
 
