@@ -135,14 +135,21 @@ const ScannerPage = ({ navigateTo }) => {
       });
       if (!response.ok) throw new Error('Failed to fetch prediction');
       const data = await response.json();
+      
+      console.log("Data received from backend:", data);
 
-      // --- DEBUGGING STEP ---
-      // This will show us the exact structure of the data from the backend.
-      console.log("Data received from backend:", data); 
+      // --- FIX APPLIED HERE ---
+      // Check for common property names for the diagnosis label.
+      const diagnosisLabel = data.label || data.prediction || data.class_name;
 
-      if (data.label && typeof data.confidence === 'number') {
-        setResult(data);
-        await addScanToHistory(data, images.map(img => img.file));
+      if (diagnosisLabel && typeof data.confidence === 'number') {
+        // Standardize the result object to use 'label' internally.
+        const standardizedResult = {
+          label: diagnosisLabel,
+          confidence: data.confidence
+        };
+        setResult(standardizedResult);
+        await addScanToHistory(standardizedResult, images.map(img => img.file));
       } else {
         alert(`Unexpected response from server. Check the developer console for details.`);
         console.error("Unexpected server response:", data);
@@ -156,6 +163,7 @@ const ScannerPage = ({ navigateTo }) => {
   };
   
   const handleGetInfo = async (infoType) => {
+    // This function will now work correctly because we standardized the result object.
     if (!result?.label) return;
     setActiveInfo(infoType);
     setInfoLoading(true);
@@ -172,12 +180,6 @@ const ScannerPage = ({ navigateTo }) => {
     if (response.error) setInfoError(response.error);
     setInfoLoading(false);
   };
-
-const getConfidenceColor = (confidence) => {
-  if (confidence >= 80) return '#4caf50';
-  if (confidence >= 50) return '#ff9800';
-  return '#f44336';                          
-};
 
   return (
     <>
