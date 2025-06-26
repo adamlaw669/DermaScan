@@ -142,7 +142,7 @@ const ScannerPage = ({ navigateTo }) => {
       const data = await response.json();
       if (data.label && typeof data.confidence === 'number') {
         setResult(data);
-        // await addScanToHistory(data, images.map(img => img.file)); // History needs update for multi-image
+        await addScanToHistory(data, images.map(img => img.file)); // History needs update for multi-image
       } else {
         alert('Unexpected response from server.');
       }
